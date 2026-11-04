@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pixel Window</title>
+<link rel="stylesheet" href="window.css" />
+
+</head>
+<body>
+
+<div class="win has-scroll">
+
+  <!-- 标题栏 -->
+  <div class="win-title">
+    <span class="win-icon"></span>
+
+    <span class="win-btns">
+      <button class="win-btn min" aria-label="Minimize"></button>
+      <button class="win-btn max" aria-label="Maximize"></button>
+      <button class="win-btn close" aria-label="Close"></button>
+    </span>
+  </div>
+
+
+
+  <!-- 窗口主体 -->
+  <div class="win-body">
+    <div class="win-content"><!-- 窗口里的内容放这里 -->
+
+<img class="star-idle" src="assets/starchar.png" alt="Star character">
+
+    </div>
+
+    <!-- 滚动条（不需要的话删掉这两段，再去掉最外层的 has-scroll） -->
+    <div class="win-vscroll">
+      <button class="win-btn win-arrow up is-off" aria-label="Scroll up"></button>
+      <div class="win-track"></div>
+      <button class="win-btn win-arrow down is-off" aria-label="Scroll down"></button>
+    </div>
+    <div class="win-hscroll">
+      <button class="win-btn win-arrow left is-off" aria-label="Scroll left"></button>
+      <div class="win-track"></div>
+      <button class="win-btn win-arrow right is-off" aria-label="Scroll right"></button>
+    </div>
+    <div class="win-grip"></div>
+  </div>
+
+</div>
+
+<!-- 对话记录窗口：里面是文字，可以滚动 -->
+<div class="win has-vscroll" style="left: 420px; top: 60px; --w: 340px; --h: 100px;">
+
+  <div class="win-title">
+    <span class="win-icon"></span>
+
+    <span class="win-btns">
+      <button class="win-btn min" aria-label="Minimize"></button>
+      <button class="win-btn max" aria-label="Maximize"></button>
+      <button class="win-btn close" aria-label="Close"></button>
+    </span>
+  </div>
+
+  <div class="win-body">
+    <div class="win-content win-scroll log" id="log" tabindex="0">
+      <p class="line"><span class="who">UNKNOWN</span>...Hello? Is anyone there?</p>
+      <p class="line me"><span class="who">YOU</span>I can hear you.</p>
+      <p class="line"><span class="who">UNKNOWN</span>The signal is weak. I can barely hear you.</p>
+      <p class="line me"><span class="who">YOU</span>Where are you?</p>
+      <p class="line"><span class="who">UNKNOWN</span>I don't know. It is very quiet here.</p>
+      <p class="line me"><span class="who">YOU</span>Can you see anything?</p>
+      <p class="line"><span class="who">UNKNOWN</span>Only stars. A lot of them.</p>
+      <p class="line me"><span class="who">YOU</span>Stay on the line.</p>
+      <p class="line"><span class="who">UNKNOWN</span>Please. Say something.</p>
+      <p class="line me"><span class="who">YOU</span>I'm still here.</p>
+      <p class="line"><span class="who">UNKNOWN</span>Do you remember the last thing I said?</p>
+      <p class="line me"><span class="who">YOU</span>You asked if anyone was there.</p>
+      <p class="line"><span class="who">UNKNOWN</span>Yes. That was a long time ago.</p>
+      <p class="line me"><span class="who">YOU</span>It was only a minute.</p>
+      <p class="line"><span class="who">UNKNOWN</span>It didn't feel like a minute.</p>
+      <p class="line me"><span class="who">YOU</span>Then I'll wait with you.</p>
+    </div>
+
+    <div class="win-vscroll">
+      <button class="win-btn win-arrow up is-off" aria-label="Scroll up"></button>
+      <div class="win-track"><span class="win-thumb" hidden></span></div>
+      <button class="win-btn win-arrow down is-off" aria-label="Scroll down"></button>
+    </div>
+  </div>
+
+</div>
+
+<script src="window.js"></script>
+
+</body>
+</html>

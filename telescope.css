@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* { box-sizing: border-box; }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #101010;
+  font-family: "Press Start 2P", "Courier New", monospace;
+}
+
+.view {
+  position: relative;
+  width: min(88vmin, 92vw, 92vh);
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.controls {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+  opacity: .52;
+  transition: opacity .2s;
+}
+
+.view:hover .controls { opacity: .9; }
+
+button {
+  width: 27px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: #101111;
+  color: #e2e4dc;
+  cursor: pointer;
+  font: 10px "Press Start 2P", "Courier New", monospace;
+  box-shadow:
+    0 -2px 0 #e2e4dc, 0 2px 0 #e2e4dc,
+    -2px 0 0 #e2e4dc, 2px 0 0 #e2e4dc;
+}
+
+button:hover { background: #303330; }
+
+.zoom {
+  min-width: 48px;
+  color: #d6d9d1;
+  font-size: 10px;
+  text-align: center;
+  text-shadow: 0 1px 3px #000;
+}
+
+@media (max-width: 600px) {
+  .view { width: min(92vmin, 94vw, 94vh); }
+}

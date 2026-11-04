@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ===== 像素窗口（Win95 记事本样式，灰阶） =====
+   --px 是一个"像素"在屏幕上的大小。和星空背景的 PIXEL_CSS 保持一致，像素点大小就对得上。
+   窗口的大小、位置在标签的 style 里改（--w / --h / left / top）。
+*/
+:root {
+  --px: 1px;
+  --font: "Press Start 2P", "Courier New", monospace;
+
+  /* 图标（像素画） */
+  --m-min: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='14' viewBox='0 0 16 14' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M4 9h6v1h-6zM4 10h6v1h-6z'/%3E%3C/svg%3E");
+  --m-max: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='14' viewBox='0 0 16 14' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M3 2h9v1h-9zM3 3h9v1h-9zM3 4h1v1h-1zM11 4h1v1h-1zM3 5h1v1h-1zM11 5h1v1h-1zM3 6h1v1h-1zM11 6h1v1h-1zM3 7h1v1h-1zM11 7h1v1h-1zM3 8h1v1h-1zM11 8h1v1h-1zM3 9h1v1h-1zM11 9h1v1h-1zM3 10h9v1h-9z'/%3E%3C/svg%3E");
+  --m-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='14' viewBox='0 0 16 14' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M4 3h2v1h-2zM10 3h2v1h-2zM5 4h2v1h-2zM9 4h2v1h-2zM6 5h4v1h-4zM7 6h2v1h-2zM6 7h4v1h-4zM5 8h2v1h-2zM9 8h2v1h-2zM4 9h2v1h-2zM10 9h2v1h-2z'/%3E%3C/svg%3E");
+  --m-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M7 6h1v1h-1zM6 7h3v1h-3zM5 8h5v1h-5zM4 9h7v1h-7z'/%3E%3C/svg%3E");
+  --m-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M4 6h7v1h-7zM5 7h5v1h-5zM6 8h3v1h-3zM7 9h1v1h-1z'/%3E%3C/svg%3E");
+  --m-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M9 4h1v1h-1zM8 5h2v1h-2zM7 6h3v1h-3zM6 7h4v1h-4zM7 8h3v1h-3zM8 9h2v1h-2zM9 10h1v1h-1z'/%3E%3C/svg%3E");
+  --m-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M6 4h1v1h-1zM6 5h2v1h-2zM6 6h3v1h-3zM6 7h4v1h-4zM6 8h3v1h-3zM6 9h2v1h-2zM6 10h1v1h-1z'/%3E%3C/svg%3E");
+  --grip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23808080' d='M15 2h1v1h-1zM14 3h1v1h-1zM13 4h1v1h-1zM12 5h1v1h-1zM11 6h1v1h-1zM15 6h1v1h-1zM10 7h1v1h-1zM14 7h1v1h-1zM9 8h1v1h-1zM13 8h1v1h-1zM8 9h1v1h-1zM12 9h1v1h-1zM7 10h1v1h-1zM11 10h1v1h-1zM15 10h1v1h-1zM6 11h1v1h-1zM10 11h1v1h-1zM14 11h1v1h-1zM5 12h1v1h-1zM9 12h1v1h-1zM13 12h1v1h-1zM4 13h1v1h-1zM8 13h1v1h-1zM12 13h1v1h-1zM3 14h1v1h-1zM7 14h1v1h-1zM11 14h1v1h-1zM2 15h1v1h-1zM6 15h1v1h-1zM10 15h1v1h-1z'/%3E%3Cpath fill='%23fff' d='M15 3h1v1h-1zM14 4h1v1h-1zM13 5h1v1h-1zM12 6h1v1h-1zM11 7h1v1h-1zM15 7h1v1h-1zM10 8h1v1h-1zM14 8h1v1h-1zM9 9h1v1h-1zM13 9h1v1h-1zM8 10h1v1h-1zM12 10h1v1h-1zM7 11h1v1h-1zM11 11h1v1h-1zM15 11h1v1h-1zM6 12h1v1h-1zM10 12h1v1h-1zM14 12h1v1h-1zM5 13h1v1h-1zM9 13h1v1h-1zM13 13h1v1h-1zM4 14h1v1h-1zM8 14h1v1h-1zM12 14h1v1h-1zM3 15h1v1h-1zM7 15h1v1h-1zM11 15h1v1h-1z'/%3E%3C/svg%3E");
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M3 1h8v1h-8zM3 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM3 3h1v1h-1zM9 3h4v1h-4zM3 4h1v1h-1zM12 4h1v1h-1zM3 5h1v1h-1zM12 5h1v1h-1zM3 6h1v1h-1zM12 6h1v1h-1zM3 7h1v1h-1zM12 7h1v1h-1zM3 8h1v1h-1zM12 8h1v1h-1zM3 9h1v1h-1zM12 9h1v1h-1zM3 10h1v1h-1zM12 10h1v1h-1zM3 11h1v1h-1zM12 11h1v1h-1zM3 12h1v1h-1zM12 12h1v1h-1zM3 13h1v1h-1zM12 13h1v1h-1zM3 14h10v1h-10z'/%3E%3Cpath fill='%23fff' d='M4 2h8v1h-8zM4 3h6v1h-6zM4 4h1v1h-1zM11 4h1v1h-1zM4 5h8v1h-8zM4 6h1v1h-1zM11 6h1v1h-1zM4 7h8v1h-8zM4 8h1v1h-1zM11 8h1v1h-1zM4 9h8v1h-8zM4 10h1v1h-1zM11 10h1v1h-1zM4 11h8v1h-8zM4 12h8v1h-8zM4 13h8v1h-8z'/%3E%3Cpath fill='%23808080' d='M5 4h6v1h-6zM5 6h6v1h-6zM5 8h6v1h-6zM5 10h6v1h-6z'/%3E%3C/svg%3E");
+}
+
+.win {
+  --u: var(--px);
+  --face: #c0c0c0;
+  --hi: #fff;
+  --lo: #dfdfdf;
+  --sh: #808080;
+  --dk: #0a0a0a;
+  --title-bg: #808080;       /* 没激活的标题栏：灰底 */
+  --title-fg: #c0c0c0;
+
+  /* 四种立体边：凸起 / 按下 / 凹陷 / 窗口外框 */
+  --raised:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--dk),
+    inset var(--u) var(--u) var(--hi),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--sh),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--lo);
+  --pressed:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--hi),
+    inset var(--u) var(--u) var(--dk),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--lo),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--sh);
+  --sunken:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--hi),
+    inset var(--u) var(--u) var(--sh),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--lo),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--dk);
+  --frame:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--dk),
+    inset var(--u) var(--u) var(--lo),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--sh),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--hi);
+
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: var(--w, 600px);
+  height: var(--h, 420px);
+  padding: calc(var(--u) * 1);
+  color: #000;
+  background: var(--face);
+  box-shadow: var(--frame);
+  font: calc(var(--u) * 4)/1 var(--font);
+  user-select: none;
+}
+.win *, .win *::before, .win *::after { box-sizing: border-box; }
+
+/* 当前正在用的窗口：标题栏变黑底白字 */
+.win.active { --title-bg: #000; --title-fg: #fff; }
+
+/* ---------- 标题栏 ---------- */
+.win-title {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: calc(var(--u) * 18);
+  padding: calc(var(--u) * 2) calc(var(--u) * 2) calc(var(--u) * 2) calc(var(--u) * 3);
+  color: var(--title-fg);
+  background: var(--title-bg);
+}
+.win-icon {
+  flex: none;
+  width: calc(var(--u) * 16);
+  height: calc(var(--u) * 16);
+  margin-right: calc(var(--u) * 3);
+  background: var(--icon) center / 100% 100% no-repeat;
+}
+.win-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: var(--u) 0 0 currentColor;   /* 像素式"加粗" */
+}
+.win-btns { flex: none; display: flex; margin-left: auto; }
+.win-btns .win-btn:last-child { margin-left: calc(var(--u) * 2); }
+
+/* ---------- 按钮（标题栏三个 + 滚动条箭头） ---------- */
+.win-btn {
+  position: relative;
+  flex: none;
+  width: calc(var(--u) * 16);
+  height: calc(var(--u) * 14);
+  padding: 0;
+  border: 0;
+  color: #000;
+  background: var(--face);
+  box-shadow: var(--raised);
+  cursor: pointer;
+}
+.win-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  -webkit-mask: var(--g) 0 0 / 100% 100% no-repeat;
+          mask: var(--g) 0 0 / 100% 100% no-repeat;
+}
+.win-btn:active { box-shadow: var(--pressed); }
+.win-btn:active::after { transform: translate(var(--u), var(--u)); }
+.win-btn:focus-visible { outline: calc(var(--u)) dotted #000; outline-offset: calc(var(--u) * -4); }
+.win-btn.min   { --g: var(--m-min); }
+.win-btn.max   { --g: var(--m-max); }
+.win-btn.close { --g: var(--m-close); }
+
+.win-arrow { height: calc(var(--u) * 16); }
+.win-arrow.up    { --g: var(--m-up); }
+.win-arrow.down  { --g: var(--m-down); }
+.win-arrow.left  { --g: var(--m-left); }
+.win-arrow.right { --g: var(--m-right); }
+
+/* 灰掉的箭头（没有内容可滚动时）：灰字 + 白色阴影 */
+.win-arrow.is-off { cursor: default; color: var(--sh); }
+.win-arrow.is-off::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hi);
+  -webkit-mask: var(--g) 0 0 / 100% 100% no-repeat;
+          mask: var(--g) 0 0 / 100% 100% no-repeat;
+  transform: translate(var(--u), var(--u));
+}
+.win-arrow.is-off:active { box-shadow: var(--raised); }
+.win-arrow.is-off:active::after { transform: none; }
+
+/* ---------- 菜单栏 ---------- */
+.win-menu {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: calc(var(--u) * 18);
+  padding: 0 calc(var(--u) * 2);
+}
+.win-menu span { padding: calc(var(--u) * 3) calc(var(--u) * 6); cursor: default; }
+.win-menu span:hover { color: var(--hi); background: #000; }
+.win-menu u { text-decoration-thickness: var(--u); text-underline-offset: var(--u); }
+
+/* ---------- 窗口主体：一圈凹陷边，里面是黑色内容区 ---------- */
+.win-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  padding: calc(var(--u) * 2);
+  background: var(--face);
+  box-shadow: var(--sunken);
+}
+.win-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+}
+
+/* 滚动条：加上 has-scroll 才会出现 */
+.win-vscroll, .win-hscroll, .win-grip { display: none; }
+.win.has-scroll .win-body {
+  grid-template-columns: 1fr calc(var(--u) * 16);
+  grid-template-rows: 1fr calc(var(--u) * 16);
+}
+.win.has-scroll .win-vscroll { display: flex; flex-direction: column; }
+.win.has-scroll .win-hscroll { display: flex; }
+.win.has-scroll .win-grip {
+  display: block;
+  background: var(--grip) 0 0 / 100% 100% no-repeat, var(--face);
+}
+
+/* 滚动条轨道：黑白相间的 1 像素棋盘格 */
+.win-track {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background:
+    conic-gradient(var(--hi) 25%, var(--face) 0 50%, var(--hi) 0 75%, var(--face) 0)
+    0 0 / calc(var(--u) * 2) calc(var(--u) * 2);
+}
+
+
+.win {
+  position: absolute;
+  left: 80px;
+  top: 60px;
+  --w: 300px;
+  --h: 300px;
+}
+
+.win-title {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.win-title:active {
+  cursor: grabbing;
+}
+
+.win-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.star-idle {
+  display: block;
+  width: 280px;
+  height: auto;
+
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: starIdle 3s ease-in-out infinite;
+}
+
+@keyframes starIdle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+
+/* ================= 对话记录窗口（可滚动） =================
+   用法：窗口加上 has-vscroll，内容区加上 win-scroll log；
+   滚动条的外观和功能由 window.js 里的 initScroll 负责。
+*/
+.win-track { position: relative; }
+
+.win.has-vscroll .win-body {
+  grid-template-columns: 1fr calc(var(--u) * 16);
+  grid-template-rows: 1fr;
+}
+.win.has-vscroll .win-vscroll { display: flex; flex-direction: column; }
+
+/* 内容区自己滚动，但藏起系统自带的滚动条（用我们画的那条） */
+.win-scroll { overflow-y: auto; scrollbar-width: none; }
+.win-scroll::-webkit-scrollbar { display: none; }
+.win-scroll:focus-visible {
+  outline: var(--u) dotted var(--sh);
+  outline-offset: calc(var(--u) * -2);
+}
+
+/* 滑块：凸起的小方块 */
+.win-thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: var(--face);
+  box-shadow: var(--raised);
+  cursor: default;
+  touch-action: none;
+}
+.win-thumb[hidden] { display: none; }
+
+/* 对话记录的文字（Press Start 2P 用 8 的倍数最清晰） */
+.win-content.log {
+  display: block;                   /* 覆盖上面 .win-content 的居中布局 */
+  padding: calc(var(--u) * 8);
+  font: calc(var(--u) * 8)/1.9 var(--font);
+  font-family: var(--font), "Microsoft YaHei", "PingFang SC", sans-serif;
+  user-select: text;
+}
+.log .line { margin: 0 0 calc(var(--u) * 8); }
+.log .who {                         /* 说话人：反白小牌子 */
+  display: inline-block;
+  margin-right: calc(var(--u) * 3);
+  padding: calc(var(--u) * 2) calc(var(--u) * 3);
+  line-height: 1;
+  color: #000;
+  background: #fff;
+}
+.log .me .who {                     /* 玩家自己：黑底白框 */
+  color: #fff;
+  background: #000;
+  box-shadow: inset 0 0 0 var(--u) #fff;
+}

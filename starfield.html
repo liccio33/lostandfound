@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Starfield</title>
+  <link rel="stylesheet" href="starfield.css">
+  <script src="starfield.js" defer></script>
+
+
+  <script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+
+
+</head>
+<body>
+  <canvas id="sky"></canvas>
+  <iframe
+    id="window-frame"
+    src="window.html"
+    title="Floating window"
+  ></iframe>
+  <div id="telescope-view"></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
