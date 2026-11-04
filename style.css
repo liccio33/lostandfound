@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enter Starfield</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <main class="landing">
+    <p class="label">SIGNAL FOUND</p>
+    <a class="enter-button" href="starfield.html">
+      <span>ENTER STARFIELD</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+    <p class="hint">CLICK TO CONTINUE</p>
+  </main>
+</body>
+</html>
