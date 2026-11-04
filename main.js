@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 const container = document.querySelector("#telescope-view");
 
 // 数字越大，像素块越明显
-const PIXEL_SIZE = 4;
+const PIXEL_SIZE = 2;
 
 const scene = new THREE.Scene();
 
