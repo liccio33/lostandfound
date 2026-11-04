@@ -1,19 +1,58 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Enter Starfield</title>
-  <link rel="stylesheet" href="index.css">
-</head>
-<body>
-  <main class="landing">
-    <p class="label">SIGNAL FOUND</p>
-    <a class="enter-button" href="starfield.html">
-      <span>ENTER STARFIELD</span>
-      <span aria-hidden="true">↗</span>
-    </a>
-    <p class="hint">CLICK TO CONTINUE</p>
-  </main>
-</body>
-</html>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  background: #050505;
+  color: #f4f4f4;
+  font-family: monospace;
+}
+
+.landing {
+  width: min(440px, 86vw);
+  padding: 28px;
+  border: 2px solid #f4f4f4;
+  box-shadow: 6px 6px 0 #555;
+  text-align: center;
+}
+
+.label,
+.hint {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+}
+
+.label {
+  margin: 0 0 24px;
+}
+
+.enter-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  border: 2px solid #f4f4f4;
+  color: inherit;
+  text-decoration: none;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+
+.enter-button:hover,
+.enter-button:focus-visible {
+  background: #f4f4f4;
+  color: #050505;
+}
+
+.hint {
+  margin: 20px 0 0;
+}
