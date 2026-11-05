@@ -389,6 +389,7 @@ function pointerAngle(event) {
 }
 
 let ringDrag = null;
+let panStart = null;
 
 // ---------- 鼠标和触控操作 ----------
 const pointers = new Map();
@@ -414,17 +415,30 @@ view.addEventListener("pointerdown", (event) => {
     return;
   }
 
-  pointers.set(event.pointerId, {
-    x: event.clientX,
-    y: event.clientY
-  });
+pointers.set(event.pointerId, {
+  x: event.clientX,
+  y: event.clientY
+});
 
-  if (pointers.size === 2) {
-    pinchStart = {
-      dist: pointerDistance() || 1,
-      mag: magnification
-    };
-  }
+view.setPointerCapture(event.pointerId);
+
+if (pointers.size === 1) {
+  panStart = {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    cameraX,
+    cameraY
+  };
+}
+
+if (pointers.size === 2) {
+  panStart = null;
+  pinchStart = {
+    dist: pointerDistance() || 1,
+    mag: magnification
+  };
+}
 });
 
 function releasePointer(event) {
@@ -475,24 +489,50 @@ view.addEventListener("pointermove", (event) => {
     return;
   }
 
-  // 鼠标在圆环上时不移动星空
-  if (getRingIndex(event) !== -1) {
-    view.style.cursor = "grab";
+  // 按住并拖动才移动星空
+  if (panStart && event.pointerId === panStart.id && pointers.size === 1) {
+    const rect = view.getBoundingClientRect();
+    const pixelsPerUnit = canvas.width * 0.49 * 0.9 * magnification;
+
+    const dx = (event.clientX - panStart.x) * (canvas.width / rect.width);
+    const dy = (event.clientY - panStart.y) * (canvas.height / rect.height);
+
+    cameraX = panStart.cameraX - dx / pixelsPerUnit;
+    cameraY = panStart.cameraY - dy / pixelsPerUnit;
+
+    view.style.cursor = "grabbing";
+    draw();
     return;
   }
 
-  view.style.cursor = "crosshair";
+  view.style.cursor = getRingIndex(event) !== -1 ? "grab" : "crosshair";
+});
 
-  // 移动鼠标，改变镜头看到的星空区域
-  const rect = view.getBoundingClientRect();
-  const x = (event.clientX - rect.left) / rect.width;
-  const y = (event.clientY - rect.top) / rect.height;
+// WASD / 方向键移动视野
+const KEY_STEP = 0.08;
 
-  cameraX = (x - 0.5) * 2.4;
-  cameraY = (y - 0.5) * 2.4;
+const keyDirections = {
+  KeyA: [-1, 0],
+  ArrowLeft: [-1, 0],
+  KeyD: [1, 0],
+  ArrowRight: [1, 0],
+  KeyW: [0, -1],
+  ArrowUp: [0, -1],
+  KeyS: [0, 1],
+  ArrowDown: [0, 1]
+};
 
+window.addEventListener("keydown", (event) => {
+  const direction = keyDirections[event.code];
+  if (!direction) return;
+
+  event.preventDefault();
+
+  cameraX += (direction[0] * KEY_STEP) / magnification;
+  cameraY += (direction[1] * KEY_STEP) / magnification;
   draw();
 });
+
 
 // 滚轮缩放
 view.addEventListener(
