@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const container = document.querySelector("#telescope-view");
 
@@ -22,6 +23,8 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.5; // 数字越大，整体越亮
 renderer.domElement.style.width = "100%";
 renderer.domElement.style.height = "100%";
 renderer.domElement.style.imageRendering = "pixelated";
@@ -31,12 +34,34 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let telescopeModel = null;
 
-// 灯光
-scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 2));
+// 环境反射：让金属在各个方向都有可反射的光
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+const roomEnvironment = new RoomEnvironment();
 
+const environmentTarget = pmremGenerator.fromScene(
+  roomEnvironment,
+  0.04
+);
+
+scene.environment = environmentTarget.texture;
+
+roomEnvironment.dispose();
+pmremGenerator.dispose();
+
+// 柔和的基础照明
+scene.add(
+  new THREE.HemisphereLight(0xffffff, 0xaaaaaa, 1)
+);
+
+// 正面主灯，保留立体感
 const light = new THREE.DirectionalLight(0xffffff, 2);
 light.position.set(3, 5, 5);
 scene.add(light);
+
+// 背面补光
+const backLight = new THREE.DirectionalLight(0xffffff, 1.5);
+backLight.position.set(-3, 2, -5);
+scene.add(backLight);
 
 // 鼠标拖动旋转，滚轮缩放
 const controls = new OrbitControls(camera, renderer.domElement);
