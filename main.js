@@ -27,6 +27,10 @@ renderer.domElement.style.height = "100%";
 renderer.domElement.style.imageRendering = "pixelated";
 container.appendChild(renderer.domElement);
 
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let telescopeModel = null;
+
 // 灯光
 scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 2));
 
@@ -69,6 +73,8 @@ loader.load(
     modelGroup.add(gltf.scene);
     scene.add(modelGroup);
 
+    telescopeModel = modelGroup;
+
     const bounds = new THREE.Box3().setFromObject(modelGroup);
     const sphere = bounds.getBoundingSphere(new THREE.Sphere());
 
@@ -101,3 +107,20 @@ function animate() {
 }
 
 animate();
+
+renderer.domElement.addEventListener("dblclick", (event) => {
+  if (!telescopeModel) return;
+
+  const rect = renderer.domElement.getBoundingClientRect();
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+
+  const hits = raycaster.intersectObject(telescopeModel, true);
+
+  if (hits.length > 0) {
+    window.location.href = "./telescope.html";
+  }
+});
