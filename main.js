@@ -92,7 +92,7 @@ resize();
 const loader = new GLTFLoader();
 
 loader.load(
-  "assets/telescope.glb",
+  "assets/music_box.glb",
   (gltf) => {
     const modelGroup = new THREE.Group();
     modelGroup.add(gltf.scene);
