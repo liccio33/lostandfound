@@ -6,22 +6,18 @@ const ctx = canvas.getContext("2d");
 const RING_BLOCK = 2;
 
 // 顺序是：[外层厚度, 内层厚度]，单位是像素块
-const RING_THICKNESSES = [6,9];
+const RING_THICKNESSES = [6, 9];
 const RING_COUNT = RING_THICKNESSES.length;
 const RING_GAP_BLOCKS = 1;
 
-// 固定最内层的内缘位置。
-// 数字越大，两层圆环整体越往镜头中心移动。
-// 当前设置下，15 可以让两层环都留在画布范围内。
+// 固定最内层的内缘位置
 const INNERMOST_INSET_BLOCKS = 14;
 
 const TICK_DEG = 6;
 const TICK_LONG_EVERY = 5;
-const RING_RANGE = Math.PI * 4 / 3;
-// --------------------------------
+const FULL_TURN = Math.PI * 2;
 
-// 计算每一层环的内外半径。
-// radius、返回值和 blockSize 使用相同单位。
+// 计算每一层环的内外半径
 function getRingBounds(radius, ringIndex, blockSize = RING_BLOCK) {
   const innerRingInner =
     radius - INNERMOST_INSET_BLOCKS * blockSize;
@@ -72,8 +68,6 @@ function makeRing() {
       );
 
       for (let ringIndex = 0; ringIndex < RING_COUNT; ringIndex++) {
-        // 这里的半径单位是低分辨率 canvas 的像素，
-        // 所以 blockSize 用 1。
         const { inner, outer } =
           getRingBounds(radius, ringIndex, 1);
 
@@ -95,7 +89,8 @@ function makeRing() {
 
 const ringCanvas = makeRing();
 
-let focus = 0;
+// 两个刻度环可以连续旋转；zoomTarget 是当前倍率下的最佳对焦位置
+let zoomTarget = 0.5;
 const ringAngles = Array(RING_COUNT).fill(0);
 
 let magnification = 1;
@@ -142,6 +137,16 @@ function smoothstep(value) {
   return t * t * (3 - 2 * t);
 }
 
+// 根据两个刻度环的位置计算当前清晰度
+function getFocusLevel() {
+  const totalAngle = ringAngles.reduce((sum, angle) => sum + angle, 0);
+  const ringPosition = ((totalAngle / FULL_TURN) % 1 + 1) % 1;
+  const phase = (ringPosition - zoomTarget) * FULL_TURN;
+
+  // 整圈转动过程中，清晰度连续渐变
+  return 22 + 78 * (1 + Math.cos(phase)) / 2;
+}
+
 // 在每一层白色圆环上画刻度
 function drawTicks(center, radius, ringIndex) {
   const block = RING_BLOCK;
@@ -161,10 +166,8 @@ function drawTicks(center, radius, ringIndex) {
     const length = i % TICK_LONG_EVERY === 0 ? 3 : 2;
 
     for (let j = 0; j < length; j++) {
-      // 从圆环内侧往外画刻度
       const distance = inner + block * (1.5 + j);
 
-      // 避免刻度画出圆环
       if (distance > outer) break;
 
       const x =
@@ -181,11 +184,12 @@ function drawTicks(center, radius, ringIndex) {
   ctx.restore();
 }
 
-// 固定在顶部的一个白色三角形指示标记
+// 固定在顶部的白色三角形指示标记
 function drawIndicator(center, radius) {
   const { outer } = getRingBounds(radius, 0);
   const block = RING_BLOCK;
-  const top = Math.floor((center - outer) / block) * block + 16 * block;
+  const top =
+    Math.floor((center - outer) / block) * block + 16 * block;
 
   const rows = [12, 10, 8, 6, 4, 2, 1];
   const outlineRows = [14, 14, 14, 12, 10, 8, 6, 4, 3];
@@ -219,6 +223,7 @@ function draw() {
   const radius = size * 0.49;
   const innerRadius = getInnermostRadius(radius);
   const scale = radius * 0.9 * magnification;
+  const focus = getFocusLevel();
 
   ctx.clearRect(0, 0, size, size);
 
@@ -232,7 +237,7 @@ function draw() {
   ctx.fillRect(0, 0, size, size);
 
   // 星星随焦距逐渐变清晰
-  ctx.filter = `blur(${(1 - focus / 100) * 5}px)`;
+  ctx.filter = `blur(${(1 - focus / 100) * 4}px)`;
 
   for (const star of stars) {
     const x = center + (star.x - cameraX) * scale;
@@ -240,12 +245,12 @@ function draw() {
 
     if (x < 0 || x > size || y < 0 || y > size) continue;
 
-    ctx.globalAlpha = star.light * (0.48 + focus / 190);
+    ctx.globalAlpha = star.light * (0.62 + focus / 263);
     ctx.fillStyle = "#e1e3dc";
     ctx.fillRect(Math.round(x), Math.round(y), star.size, star.size);
   }
 
-  // 星图只在镜头对准目标区域、并且焦距足够清晰时渐渐出现
+  // 星图只在镜头对准目标区域、且焦距足够清晰时渐渐出现
   const targetX = center + (0 - cameraX) * scale;
   const targetY = center + (0 - cameraY) * scale;
   const targetDistance = Math.hypot(
@@ -322,32 +327,30 @@ function draw() {
     drawTicks(center, radius, ringIndex);
   }
 
-  // 只画一个固定指示三角形
+  // 固定指示三角形
   drawIndicator(center, radius);
 }
 
 // ---------- 放大缩小 ----------
 function setMagnification(value) {
-  magnification = Math.max(0.3, Math.min(3.5, value));
+  const nextMagnification = Math.max(0.3, Math.min(3.5, value));
+  const zoomChange = Math.log(nextMagnification / magnification);
+
+  // 改变倍率会移动最佳对焦位置，需要再转动刻度环重新对焦
+  zoomTarget = ((zoomTarget + zoomChange * 0.5) % 1 + 1) % 1;
+  magnification = nextMagnification;
+
   document.getElementById("zoom").textContent =
     `×${magnification.toFixed(1)}`;
+
   draw();
 }
 
-// ---------- 转动某一层对焦环 ----------
-function setRing(ringIndex, angle) {
-  ringAngles[ringIndex] = Math.max(
-    0,
-    Math.min(RING_RANGE, angle)
-  );
+// ---------- 无限旋转对焦环 ----------
+function rotateRing(ringIndex, delta) {
+  ringAngles[ringIndex] =
+    ((ringAngles[ringIndex] + delta) % FULL_TURN + FULL_TURN) % FULL_TURN;
 
-  // 两层共同影响最终焦距
-  const totalProgress = ringAngles.reduce(
-    (sum, ringAngle) => sum + ringAngle / RING_RANGE,
-    0
-  );
-
-  focus = (totalProgress / RING_COUNT) * 100;
   draw();
 }
 
@@ -403,6 +406,7 @@ function pointerDistance() {
 view.addEventListener("pointerdown", (event) => {
   const ringIndex = getRingIndex(event);
 
+  // 拖动圆环：转动对应刻度环
   if (ringIndex !== -1) {
     ringDrag = {
       id: event.pointerId,
@@ -415,30 +419,32 @@ view.addEventListener("pointerdown", (event) => {
     return;
   }
 
-pointers.set(event.pointerId, {
-  x: event.clientX,
-  y: event.clientY
-});
-
-view.setPointerCapture(event.pointerId);
-
-if (pointers.size === 1) {
-  panStart = {
-    id: event.pointerId,
+  pointers.set(event.pointerId, {
     x: event.clientX,
-    y: event.clientY,
-    cameraX,
-    cameraY
-  };
-}
+    y: event.clientY
+  });
 
-if (pointers.size === 2) {
-  panStart = null;
-  pinchStart = {
-    dist: pointerDistance() || 1,
-    mag: magnification
-  };
-}
+  view.setPointerCapture(event.pointerId);
+
+  // 单指或鼠标拖动：准备平移星空
+  if (pointers.size === 1) {
+    panStart = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      cameraX,
+      cameraY
+    };
+  }
+
+  // 双指：准备捏合缩放
+  if (pointers.size === 2) {
+    panStart = null;
+    pinchStart = {
+      dist: pointerDistance() || 1,
+      mag: magnification
+    };
+  }
 });
 
 function releasePointer(event) {
@@ -450,7 +456,30 @@ function releasePointer(event) {
   }
 
   pointers.delete(event.pointerId);
+
+  if (panStart && event.pointerId === panStart.id) {
+    panStart = null;
+  }
+
   pinchStart = null;
+
+  if (pointers.size === 0) {
+    view.style.cursor =
+      getRingIndex(event) !== -1 ? "grab" : "crosshair";
+  }
+
+  // 双指缩放结束后，剩下的一根手指可以继续拖动
+  if (pointers.size === 1) {
+    const [id, pointer] = pointers.entries().next().value;
+
+    panStart = {
+      id,
+      x: pointer.x,
+      y: pointer.y,
+      cameraX,
+      cameraY
+    };
+  }
 }
 
 view.addEventListener("pointerup", releasePointer);
@@ -466,11 +495,7 @@ view.addEventListener("pointermove", (event) => {
     if (difference < -Math.PI) difference += Math.PI * 2;
 
     ringDrag.last = angle;
-
-    setRing(
-      ringDrag.index,
-      ringAngles[ringDrag.index] + difference
-    );
+    rotateRing(ringDrag.index, difference);
     return;
   }
 
@@ -489,13 +514,14 @@ view.addEventListener("pointermove", (event) => {
     return;
   }
 
-  // 按住并拖动才移动星空
+  // 只有按住拖动时才平移星空；单纯移动鼠标不改变视野
   if (panStart && event.pointerId === panStart.id && pointers.size === 1) {
     const rect = view.getBoundingClientRect();
     const pixelsPerUnit = canvas.width * 0.49 * 0.9 * magnification;
-
-    const dx = (event.clientX - panStart.x) * (canvas.width / rect.width);
-    const dy = (event.clientY - panStart.y) * (canvas.height / rect.height);
+    const dx =
+      (event.clientX - panStart.x) * (canvas.width / rect.width);
+    const dy =
+      (event.clientY - panStart.y) * (canvas.height / rect.height);
 
     cameraX = panStart.cameraX - dx / pixelsPerUnit;
     cameraY = panStart.cameraY - dy / pixelsPerUnit;
@@ -505,10 +531,11 @@ view.addEventListener("pointermove", (event) => {
     return;
   }
 
-  view.style.cursor = getRingIndex(event) !== -1 ? "grab" : "crosshair";
+  view.style.cursor =
+    getRingIndex(event) !== -1 ? "grab" : "crosshair";
 });
 
-// WASD / 方向键移动视野
+// ---------- WASD / 方向键移动视野 ----------
 const KEY_STEP = 0.08;
 
 const keyDirections = {
@@ -530,9 +557,9 @@ window.addEventListener("keydown", (event) => {
 
   cameraX += (direction[0] * KEY_STEP) / magnification;
   cameraY += (direction[1] * KEY_STEP) / magnification;
+
   draw();
 });
-
 
 // 滚轮缩放
 view.addEventListener(
