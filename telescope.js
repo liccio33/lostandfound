@@ -107,7 +107,10 @@ const stars = Array.from({ length: 1200 }, () => ({
   x: random() * 9 - 4.5,
   y: random() * 9 - 4.5,
   size: random() > 0.9 ? 3 : random() > 0.56 ? 2 : 1,
-  light: 0.35 + random() * 0.65
+  light: 0.35 + random() * 0.65,
+  twinkleSpeed: 2 + random() * 2,
+  twinklePhase: random() * Math.PI * 2,
+  twinkleAmount: random() < 0.18 ? 0.9 : 0.5 + random() * 0.3
 }));
 
 const constellation = [
@@ -218,6 +221,7 @@ function drawIndicator(center, radius) {
 }
 
 function draw() {
+  const time = performance.now() / 1000;
   const size = canvas.width;
   const center = size / 2;
   const radius = size * 0.49;
@@ -245,7 +249,13 @@ function draw() {
 
     if (x < 0 || x > size || y < 0 || y > size) continue;
 
-    ctx.globalAlpha = star.light * (0.62 + focus / 263);
+    const twinkle =
+      1 -
+      star.twinkleAmount *
+        (0.5 + 0.5 * Math.sin(time * star.twinkleSpeed + star.twinklePhase));
+
+    ctx.globalAlpha = star.light * (0.48 + focus / 190) * twinkle;
+
     ctx.fillStyle = "#e1e3dc";
     ctx.fillRect(Math.round(x), Math.round(y), star.size, star.size);
   }
@@ -592,4 +602,9 @@ const controls = document.querySelector(".controls");
   });
 });
 
-draw();
+function animateStars() {
+  draw();
+  requestAnimationFrame(animateStars);
+}
+
+animateStars();
