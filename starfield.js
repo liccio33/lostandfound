@@ -5,8 +5,8 @@ const SEED = 20261031;
 const SHOOTING_STARS = 3;
 
 // 鼠标互动参数
-const MOUSE_RADIUS = 18;
-const MOUSE_STRENGTH = 4;
+const MOUSE_RADIUS = 23;
+const MOUSE_STRENGTH = 10;
 const RETURN_SPEED = 0.18;
 
 const LAYERS = [
