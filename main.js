@@ -92,7 +92,7 @@ resize();
 const loader = new GLTFLoader();
 
 loader.load(
-  "assets/music_box.glb",
+  "assets/flip_phone.glb",
   (gltf) => {
     const modelGroup = new THREE.Group();
     modelGroup.add(gltf.scene);
