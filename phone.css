@@ -1,0 +1,403 @@
+/* ===== 手机页面（黑白像素风格）=====
+   需要和 window.css 放在同一个文件夹里：键盘小窗口直接用它的窗口样式和按钮图标。
+   整个页面按一个 360×200 的"像素格子"来排版，phone.js 会算出一个整数倍的 --px，
+   所以不管屏幕多大，像素点都是一样大，也不会出现滚动条。
+*/
+:root {
+  /* 图标、壁纸、手机外壳的像素圆角（脚本生成，不用手改） */
+  --ico-msg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 1h10v1h-10zM1 2h2v1h-2zM9 2h2v1h-2zM1 3h1v1h-1zM3 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM1 4h1v1h-1zM4 4h1v1h-1zM7 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM5 5h2v1h-2zM10 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM1 9h10v1h-10z'/%3E%3C/svg%3E");
+  --ico-name: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M4 1h4v1h-4zM3 2h6v1h-6zM3 3h6v1h-6zM3 4h6v1h-6zM4 5h4v1h-4zM2 7h8v1h-8zM1 8h10v1h-10zM1 9h10v1h-10zM1 10h10v1h-10z'/%3E%3C/svg%3E");
+  --ico-log: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 2h2v1h-2zM4 2h7v1h-7zM1 4h2v1h-2zM4 4h7v1h-7zM1 6h2v1h-2zM4 6h7v1h-7zM1 8h2v1h-2zM4 8h7v1h-7z'/%3E%3C/svg%3E");
+  --ico-note: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M2 1h8v1h-8zM2 2h1v1h-1zM9 2h1v1h-1zM2 3h1v1h-1zM4 3h4v1h-4zM9 3h1v1h-1zM2 4h1v1h-1zM9 4h1v1h-1zM2 5h1v1h-1zM4 5h4v1h-4zM9 5h1v1h-1zM2 6h1v1h-1zM9 6h1v1h-1zM2 7h1v1h-1zM4 7h4v1h-4zM9 7h1v1h-1zM2 8h1v1h-1zM9 8h1v1h-1zM2 9h8v1h-8z'/%3E%3C/svg%3E");
+  --ico-pics: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 1h10v1h-10zM1 2h1v1h-1zM10 2h1v1h-1zM1 3h1v1h-1zM3 3h2v1h-2zM10 3h1v1h-1zM1 4h1v1h-1zM3 4h2v1h-2zM7 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM6 5h3v1h-3zM10 5h1v1h-1zM1 6h1v1h-1zM4 6h5v1h-5zM10 6h1v1h-1zM1 7h1v1h-1zM3 7h8v1h-8zM1 8h10v1h-10z'/%3E%3C/svg%3E");
+  --ico-clok: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M3 0h6v1h-6zM2 1h2v1h-2zM8 1h2v1h-2zM1 2h2v1h-2zM9 2h2v1h-2zM1 3h1v1h-1zM5 3h1v1h-1zM10 3h1v1h-1zM1 4h1v1h-1zM5 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM5 5h4v1h-4zM10 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h2v1h-2zM9 7h2v1h-2zM2 8h2v1h-2zM8 8h2v1h-2zM3 9h6v1h-6z'/%3E%3C/svg%3E");
+  --ico-scop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M5 0h2v1h-2zM5 1h2v1h-2zM4 2h4v1h-4zM0 3h12v1h-12zM1 4h10v1h-10zM2 5h8v1h-8zM3 6h6v1h-6zM2 7h3v1h-3zM7 7h3v1h-3zM1 8h3v1h-3zM8 8h3v1h-3zM1 9h2v1h-2zM9 9h2v1h-2z'/%3E%3C/svg%3E");
+  --ico-sets: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M5 0h2v1h-2zM2 1h1v1h-1zM4 1h4v1h-4zM9 1h1v1h-1zM1 2h4v1h-4zM7 2h4v1h-4zM2 3h2v1h-2zM8 3h2v1h-2zM1 4h2v1h-2zM9 4h2v1h-2zM0 5h3v1h-3zM9 5h3v1h-3zM0 6h3v1h-3zM9 6h3v1h-3zM1 7h2v1h-2zM9 7h2v1h-2zM2 8h2v1h-2zM8 8h2v1h-2zM1 9h4v1h-4zM7 9h4v1h-4zM2 10h1v1h-1zM4 10h4v1h-4zM9 10h1v1h-1zM5 11h2v1h-2z'/%3E%3C/svg%3E");
+  --ico-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 1h10v1h-10zM1 2h1v1h-1zM10 2h1v1h-1zM1 3h1v1h-1zM5 3h2v1h-2zM10 3h1v1h-1zM1 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM5 5h2v1h-2zM10 5h1v1h-1zM1 6h1v1h-1zM5 6h2v1h-2zM10 6h1v1h-1zM1 7h1v1h-1zM5 7h2v1h-2zM10 7h1v1h-1zM1 8h1v1h-1zM5 8h2v1h-2zM10 8h1v1h-1zM1 9h10v1h-10z'/%3E%3C/svg%3E");
+  --stars-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff' d='M14 2h1v1h-1zM3 5h1v1h-1zM29 6h1v1h-1zM19 9h1v1h-1zM7 14h1v1h-1zM23 17h1v1h-1zM11 22h1v1h-1zM27 27h1v1h-1z'/%3E%3C/svg%3E");
+  --stars-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff' d='M40 8h1v1h-1zM10 12h1v1h-1zM52 13h1v1h-1zM51 14h3v1h-3zM52 15h1v1h-1zM33 25h1v1h-1zM18 30h1v1h-1zM55 33h1v1h-1zM5 38h1v1h-1zM30 43h1v1h-1zM29 44h3v1h-3zM30 45h1v1h-1zM22 50h1v1h-1zM60 55h1v1h-1zM47 58h1v1h-1z'/%3E%3C/svg%3E");
+  --clip-shell: polygon(calc(var(--px) * 0) calc(var(--px) * 16), calc(var(--px) * 0) calc(var(--px) * 15), calc(var(--px) * 0) calc(var(--px) * 14), calc(var(--px) * 0) calc(var(--px) * 13), calc(var(--px) * 0) calc(var(--px) * 12), calc(var(--px) * 1) calc(var(--px) * 12), calc(var(--px) * 1) calc(var(--px) * 11), calc(var(--px) * 1) calc(var(--px) * 10), calc(var(--px) * 1) calc(var(--px) * 9), calc(var(--px) * 2) calc(var(--px) * 9), calc(var(--px) * 2) calc(var(--px) * 8), calc(var(--px) * 2) calc(var(--px) * 7), calc(var(--px) * 3) calc(var(--px) * 7), calc(var(--px) * 3) calc(var(--px) * 6), calc(var(--px) * 4) calc(var(--px) * 6), calc(var(--px) * 4) calc(var(--px) * 5), calc(var(--px) * 5) calc(var(--px) * 5), calc(var(--px) * 5) calc(var(--px) * 4), calc(var(--px) * 6) calc(var(--px) * 4), calc(var(--px) * 6) calc(var(--px) * 3), calc(var(--px) * 7) calc(var(--px) * 3), calc(var(--px) * 7) calc(var(--px) * 2), calc(var(--px) * 9) calc(var(--px) * 2), calc(var(--px) * 9) calc(var(--px) * 1), calc(var(--px) * 12) calc(var(--px) * 1), calc(var(--px) * 12) calc(var(--px) * 0), calc(100% - var(--px) * 12) calc(var(--px) * 0), calc(100% - var(--px) * 12) calc(var(--px) * 1), calc(100% - var(--px) * 9) calc(var(--px) * 1), calc(100% - var(--px) * 9) calc(var(--px) * 2), calc(100% - var(--px) * 7) calc(var(--px) * 2), calc(100% - var(--px) * 7) calc(var(--px) * 3), calc(100% - var(--px) * 6) calc(var(--px) * 3), calc(100% - var(--px) * 6) calc(var(--px) * 4), calc(100% - var(--px) * 5) calc(var(--px) * 4), calc(100% - var(--px) * 5) calc(var(--px) * 5), calc(100% - var(--px) * 4) calc(var(--px) * 5), calc(100% - var(--px) * 4) calc(var(--px) * 6), calc(100% - var(--px) * 3) calc(var(--px) * 6), calc(100% - var(--px) * 3) calc(var(--px) * 7), calc(100% - var(--px) * 2) calc(var(--px) * 7), calc(100% - var(--px) * 2) calc(var(--px) * 8), calc(100% - var(--px) * 2) calc(var(--px) * 9), calc(100% - var(--px) * 1) calc(var(--px) * 9), calc(100% - var(--px) * 1) calc(var(--px) * 10), calc(100% - var(--px) * 1) calc(var(--px) * 11), calc(100% - var(--px) * 1) calc(var(--px) * 12), calc(100% - var(--px) * 0) calc(var(--px) * 12), calc(100% - var(--px) * 0) calc(var(--px) * 13), calc(100% - var(--px) * 0) calc(var(--px) * 14), calc(100% - var(--px) * 0) calc(var(--px) * 15), calc(100% - var(--px) * 0) calc(var(--px) * 16), calc(100% - var(--px) * 0) calc(100% - var(--px) * 12), calc(100% - var(--px) * 0) calc(100% - var(--px) * 11), calc(100% - var(--px) * 0) calc(100% - var(--px) * 10), calc(100% - var(--px) * 0) calc(100% - var(--px) * 9), calc(100% - var(--px) * 1) calc(100% - var(--px) * 9), calc(100% - var(--px) * 1) calc(100% - var(--px) * 8), calc(100% - var(--px) * 1) calc(100% - var(--px) * 7), calc(100% - var(--px) * 1) calc(100% - var(--px) * 6), calc(100% - var(--px) * 2) calc(100% - var(--px) * 6), calc(100% - var(--px) * 2) calc(100% - var(--px) * 5), calc(100% - var(--px) * 3) calc(100% - var(--px) * 5), calc(100% - var(--px) * 3) calc(100% - var(--px) * 4), calc(100% - var(--px) * 4) calc(100% - var(--px) * 4), calc(100% - var(--px) * 4) calc(100% - var(--px) * 3), calc(100% - var(--px) * 5) calc(100% - var(--px) * 3), calc(100% - var(--px) * 5) calc(100% - var(--px) * 2), calc(100% - var(--px) * 6) calc(100% - var(--px) * 2), calc(100% - var(--px) * 6) calc(100% - var(--px) * 1), calc(100% - var(--px) * 9) calc(100% - var(--px) * 1), calc(100% - var(--px) * 9) calc(100% - var(--px) * 0), calc(var(--px) * 9) calc(100% - var(--px) * 0), calc(var(--px) * 9) calc(100% - var(--px) * 1), calc(var(--px) * 6) calc(100% - var(--px) * 1), calc(var(--px) * 6) calc(100% - var(--px) * 2), calc(var(--px) * 5) calc(100% - var(--px) * 2), calc(var(--px) * 5) calc(100% - var(--px) * 3), calc(var(--px) * 4) calc(100% - var(--px) * 3), calc(var(--px) * 4) calc(100% - var(--px) * 4), calc(var(--px) * 3) calc(100% - var(--px) * 4), calc(var(--px) * 3) calc(100% - var(--px) * 5), calc(var(--px) * 2) calc(100% - var(--px) * 5), calc(var(--px) * 2) calc(100% - var(--px) * 6), calc(var(--px) * 1) calc(100% - var(--px) * 6), calc(var(--px) * 1) calc(100% - var(--px) * 7), calc(var(--px) * 1) calc(100% - var(--px) * 8), calc(var(--px) * 1) calc(100% - var(--px) * 9), calc(var(--px) * 0) calc(100% - var(--px) * 9), calc(var(--px) * 0) calc(100% - var(--px) * 10), calc(var(--px) * 0) calc(100% - var(--px) * 11), calc(var(--px) * 0) calc(100% - var(--px) * 12));
+  --clip-body: polygon(calc(var(--px) * 0) calc(var(--px) * 15), calc(var(--px) * 0) calc(var(--px) * 14), calc(var(--px) * 0) calc(var(--px) * 13), calc(var(--px) * 0) calc(var(--px) * 12), calc(var(--px) * 0) calc(var(--px) * 11), calc(var(--px) * 1) calc(var(--px) * 11), calc(var(--px) * 1) calc(var(--px) * 10), calc(var(--px) * 1) calc(var(--px) * 9), calc(var(--px) * 1) calc(var(--px) * 8), calc(var(--px) * 2) calc(var(--px) * 8), calc(var(--px) * 2) calc(var(--px) * 7), calc(var(--px) * 3) calc(var(--px) * 7), calc(var(--px) * 3) calc(var(--px) * 6), calc(var(--px) * 3) calc(var(--px) * 5), calc(var(--px) * 4) calc(var(--px) * 5), calc(var(--px) * 4) calc(var(--px) * 4), calc(var(--px) * 5) calc(var(--px) * 4), calc(var(--px) * 5) calc(var(--px) * 3), calc(var(--px) * 7) calc(var(--px) * 3), calc(var(--px) * 7) calc(var(--px) * 2), calc(var(--px) * 8) calc(var(--px) * 2), calc(var(--px) * 8) calc(var(--px) * 1), calc(var(--px) * 11) calc(var(--px) * 1), calc(var(--px) * 11) calc(var(--px) * 0), calc(100% - var(--px) * 11) calc(var(--px) * 0), calc(100% - var(--px) * 11) calc(var(--px) * 1), calc(100% - var(--px) * 8) calc(var(--px) * 1), calc(100% - var(--px) * 8) calc(var(--px) * 2), calc(100% - var(--px) * 7) calc(var(--px) * 2), calc(100% - var(--px) * 7) calc(var(--px) * 3), calc(100% - var(--px) * 5) calc(var(--px) * 3), calc(100% - var(--px) * 5) calc(var(--px) * 4), calc(100% - var(--px) * 4) calc(var(--px) * 4), calc(100% - var(--px) * 4) calc(var(--px) * 5), calc(100% - var(--px) * 3) calc(var(--px) * 5), calc(100% - var(--px) * 3) calc(var(--px) * 6), calc(100% - var(--px) * 3) calc(var(--px) * 7), calc(100% - var(--px) * 2) calc(var(--px) * 7), calc(100% - var(--px) * 2) calc(var(--px) * 8), calc(100% - var(--px) * 1) calc(var(--px) * 8), calc(100% - var(--px) * 1) calc(var(--px) * 9), calc(100% - var(--px) * 1) calc(var(--px) * 10), calc(100% - var(--px) * 1) calc(var(--px) * 11), calc(100% - var(--px) * 0) calc(var(--px) * 11), calc(100% - var(--px) * 0) calc(var(--px) * 12), calc(100% - var(--px) * 0) calc(var(--px) * 13), calc(100% - var(--px) * 0) calc(var(--px) * 14), calc(100% - var(--px) * 0) calc(var(--px) * 15), calc(100% - var(--px) * 0) calc(100% - var(--px) * 11), calc(100% - var(--px) * 0) calc(100% - var(--px) * 10), calc(100% - var(--px) * 0) calc(100% - var(--px) * 9), calc(100% - var(--px) * 0) calc(100% - var(--px) * 8), calc(100% - var(--px) * 1) calc(100% - var(--px) * 8), calc(100% - var(--px) * 1) calc(100% - var(--px) * 7), calc(100% - var(--px) * 1) calc(100% - var(--px) * 6), calc(100% - var(--px) * 1) calc(100% - var(--px) * 5), calc(100% - var(--px) * 2) calc(100% - var(--px) * 5), calc(100% - var(--px) * 2) calc(100% - var(--px) * 4), calc(100% - var(--px) * 3) calc(100% - var(--px) * 4), calc(100% - var(--px) * 3) calc(100% - var(--px) * 3), calc(100% - var(--px) * 4) calc(100% - var(--px) * 3), calc(100% - var(--px) * 4) calc(100% - var(--px) * 2), calc(100% - var(--px) * 5) calc(100% - var(--px) * 2), calc(100% - var(--px) * 5) calc(100% - var(--px) * 1), calc(100% - var(--px) * 8) calc(100% - var(--px) * 1), calc(100% - var(--px) * 8) calc(100% - var(--px) * 0), calc(var(--px) * 8) calc(100% - var(--px) * 0), calc(var(--px) * 8) calc(100% - var(--px) * 1), calc(var(--px) * 5) calc(100% - var(--px) * 1), calc(var(--px) * 5) calc(100% - var(--px) * 2), calc(var(--px) * 4) calc(100% - var(--px) * 2), calc(var(--px) * 4) calc(100% - var(--px) * 3), calc(var(--px) * 3) calc(100% - var(--px) * 3), calc(var(--px) * 3) calc(100% - var(--px) * 4), calc(var(--px) * 2) calc(100% - var(--px) * 4), calc(var(--px) * 2) calc(100% - var(--px) * 5), calc(var(--px) * 1) calc(100% - var(--px) * 5), calc(var(--px) * 1) calc(100% - var(--px) * 6), calc(var(--px) * 1) calc(100% - var(--px) * 7), calc(var(--px) * 1) calc(100% - var(--px) * 8), calc(var(--px) * 0) calc(100% - var(--px) * 8), calc(var(--px) * 0) calc(100% - var(--px) * 9), calc(var(--px) * 0) calc(100% - var(--px) * 10), calc(var(--px) * 0) calc(100% - var(--px) * 11));
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;            /* 不让页面滚动 */
+  background: #000;
+}
+body {
+  display: grid;
+  place-items: center;
+  font-family: var(--font);
+}
+
+/* 整个舞台：360 × 200 个像素格子，居中 */
+.stage {
+  --u: var(--px);
+  --face: #c0c0c0;
+  --hi: #fff;
+  --lo: #dfdfdf;
+  --sh: #808080;
+  --dk: #0a0a0a;
+  --raised:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--dk),
+    inset var(--u) var(--u) var(--hi),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--sh),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--lo);
+  --pressed:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--hi),
+    inset var(--u) var(--u) var(--dk),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--lo),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--sh);
+  --sunken:
+    inset calc(var(--u) * -1) calc(var(--u) * -1) var(--hi),
+    inset var(--u) var(--u) var(--sh),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) var(--lo),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) var(--dk);
+
+  position: relative;
+  width: calc(var(--u) * 360);
+  height: calc(var(--u) * 200);
+  color: #fff;
+  font: calc(var(--u) * 8)/1.25 var(--font);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.stage *, .stage *::before, .stage *::after { box-sizing: border-box; }
+
+/* 右上角的操作提示 */
+.hint {
+  position: absolute;
+  left: calc(var(--u) * 200);
+  top: calc(var(--u) * 3);
+  margin: 0;
+  color: var(--sh);
+  font: calc(var(--u) * 8)/calc(var(--u) * 10) var(--font);
+}
+
+/* ================= 手机（左） ================= */
+.phone {
+  position: absolute;
+  left: calc(var(--u) * 44);
+  top: calc(var(--u) * 14);
+  width: calc(var(--u) * 128);
+  height: calc(var(--u) * 172);
+}
+.phone-shell {                       /* 最外面一圈：左上亮、右下暗 */
+  position: absolute;
+  inset: 0;
+  background: var(--hi);
+  box-shadow: inset calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--sh);
+  clip-path: var(--clip-shell);
+}
+.phone-body {                        /* 机身 */
+  position: absolute;
+  inset: var(--u);
+  background: var(--face);
+  box-shadow: var(--raised);
+  clip-path: var(--clip-body);
+}
+.earpiece {                          /* 听筒 */
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * 10);
+  width: calc(var(--u) * 30);
+  height: calc(var(--u) * 6);
+  margin-left: calc(var(--u) * -15);
+  background: repeating-linear-gradient(90deg, #404040 0 var(--u), var(--sh) var(--u) calc(var(--u) * 3));
+  box-shadow: var(--sunken);
+}
+.hinge {                             /* 机身下面的横纹 */
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--u) * 3);
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 6);
+  margin-left: calc(var(--u) * -20);
+  background: repeating-linear-gradient(180deg, var(--sh) 0 var(--u), var(--hi) var(--u) calc(var(--u) * 2));
+}
+
+/* 屏幕边框：凹进去 */
+.lcd-frame {
+  position: absolute;
+  left: calc(var(--u) * 9);
+  top: calc(var(--u) * 26);
+  width: calc(var(--u) * 108);
+  height: calc(var(--u) * 132);
+  background: #000;
+  box-shadow: var(--sunken);
+}
+
+/* ---------- 屏幕本体：104 × 128 个像素格子，一行 13 个字 ---------- */
+.lcd {
+  position: absolute;
+  left: calc(var(--u) * 2);
+  top: calc(var(--u) * 2);
+  width: calc(var(--u) * 104);
+  height: calc(var(--u) * 128);
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+  font: calc(var(--u) * 8)/calc(var(--u) * 10) var(--font);
+  white-space: nowrap;
+}
+
+/* 顶部状态栏：信号 + 电量 */
+.status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(var(--u) * 10);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 calc(var(--u) * 2);
+  border-bottom: var(--u) solid var(--sh);
+}
+.sig { display: flex; align-items: flex-end; gap: var(--u); height: calc(var(--u) * 6); }
+.sig i { display: block; width: calc(var(--u) * 2); background: #fff; }
+.sig i:nth-child(1) { height: calc(var(--u) * 2); }
+.sig i:nth-child(2) { height: calc(var(--u) * 3); }
+.sig i:nth-child(3) { height: calc(var(--u) * 4); }
+.sig i:nth-child(4) { height: calc(var(--u) * 6); }
+.bat {
+  position: relative;
+  display: flex;
+  gap: var(--u);
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 6);
+  margin-right: var(--u);
+  padding: var(--u);
+  border: var(--u) solid #fff;
+}
+.bat::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--u) * -2);
+  top: calc(var(--u) * 1);
+  width: var(--u);
+  height: calc(var(--u) * 2);
+  background: #fff;
+}
+.bat i { display: block; flex: 1; background: #fff; }
+
+/* 中间内容区 */
+.view {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 12);
+  overflow: hidden;
+}
+
+/* 底部软键标签 */
+.soft {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--u) * 12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 calc(var(--u) * 2);
+  border-top: var(--u) solid var(--sh);
+  background: #000;
+}
+
+/* 主屏幕：星空壁纸 + 时钟 */
+.view.s-home {
+  background:
+    var(--stars-a) 0 0 / calc(var(--u) * 32) calc(var(--u) * 32),
+    var(--stars-b) 0 0 / calc(var(--u) * 64) calc(var(--u) * 64);
+  image-rendering: pixelated;
+  animation: drift 24s steps(64) infinite;
+}
+@keyframes drift {
+  to { background-position: calc(var(--u) * -64) 0, calc(var(--u) * -128) 0; }
+}
+.face {
+  position: absolute;
+  left: calc(var(--u) * 6);
+  right: calc(var(--u) * 6);
+  top: calc(var(--u) * 24);
+  padding: calc(var(--u) * 6) 0;
+  text-align: center;
+  background: #000;
+  border: var(--u) solid #fff;
+}
+.clock { font: calc(var(--u) * 16)/calc(var(--u) * 16) var(--font); }
+.sub { margin-top: calc(var(--u) * 6); color: #c0c0c0; }
+
+/* 通用：标题条和一行行的列表 */
+.title {
+  display: flex;
+  justify-content: space-between;
+  height: calc(var(--u) * 10);
+  padding: var(--u) calc(var(--u) * 2);
+  color: #000;
+  background: #c0c0c0;
+}
+.row {
+  height: calc(var(--u) * 10);
+  padding: var(--u) calc(var(--u) * 2);
+  overflow: hidden;
+}
+.row.sel { color: #000; background: #fff; }
+.empty { padding: calc(var(--u) * 12) calc(var(--u) * 2); text-align: center; color: #c0c0c0; }
+
+/* 菜单：3 × 3 图标 */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(3, calc(var(--u) * 32));
+  grid-auto-rows: calc(var(--u) * 34);
+  justify-content: center;
+  column-gap: calc(var(--u) * 3);
+  padding: calc(var(--u) * 2) 0;
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 4);
+  line-height: calc(var(--u) * 8);
+}
+.cell.sel { color: #000; background: #fff; }
+.ico {
+  display: block;
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 12);
+  background: currentColor;
+  -webkit-mask: var(--g) center / 100% 100% no-repeat;
+          mask: var(--g) center / 100% 100% no-repeat;
+}
+
+/* 拨号 */
+.dial .num {
+  position: absolute;
+  left: calc(var(--u) * 2);
+  right: calc(var(--u) * 2);
+  top: calc(var(--u) * 36);
+  text-align: right;
+}
+.dial .num::after {
+  content: "";
+  display: inline-block;
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 2);
+  margin-left: calc(var(--u) * 1);
+  background: #fff;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* 通话中 */
+.calling { text-align: center; }
+.calling .who { padding-top: calc(var(--u) * 24); }
+.calling .state { margin-top: calc(var(--u) * 8); color: #c0c0c0; }
+.calling .lines { margin-top: calc(var(--u) * 6); text-align: left; }
+.dots i { font-style: normal; opacity: 0; animation: dot 1.2s steps(1) infinite; }
+.dots i:nth-child(2) { animation-delay: .4s; }
+.dots i:nth-child(3) { animation-delay: .8s; }
+@keyframes dot { 0% { opacity: 0; } 33% { opacity: 1; } 100% { opacity: 1; } }
+
+/* ================= 键盘小窗口（右）：用 window.css 的窗口 ================= */
+.keypad-win {
+  left: calc(var(--u) * 200);
+  top: calc(var(--u) * 26);
+  --w: calc(var(--u) * 134);
+  --h: calc(var(--u) * 170);
+}
+.keypad-win .win-title { cursor: default; }
+
+.win-content.keypad {
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  gap: calc(var(--u) * 4);
+  padding: calc(var(--u) * 6) 0;
+  background: #000;
+}
+.pad-top {
+  display: grid;
+  grid-template-columns: calc(var(--u) * 28) calc(var(--u) * 48) calc(var(--u) * 28);
+  column-gap: calc(var(--u) * 4);
+  justify-content: center;
+  align-items: start;
+}
+.pad-row, .pad-nums {
+  display: grid;
+  grid-template-columns: repeat(3, calc(var(--u) * 36));
+  gap: calc(var(--u) * 4);
+  justify-content: center;
+}
+.pad-nums { row-gap: calc(var(--u) * 4); }
+
+/* 方向键：十字形，复用窗口滚动条的箭头按钮 */
+.dpad {
+  display: grid;
+  grid-template: repeat(3, calc(var(--u) * 16)) / repeat(3, calc(var(--u) * 16));
+}
+.dpad .up    { grid-area: 1 / 2; }
+.dpad .left  { grid-area: 2 / 1; }
+.dpad .ok    { grid-area: 2 / 2; }
+.dpad .right { grid-area: 2 / 3; }
+.dpad .down  { grid-area: 3 / 2; }
+
+/* 普通按键 */
+.key {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: calc(var(--u) * 13);
+  padding: 0;
+  border: 0;
+  color: #000;
+  background: var(--face);
+  box-shadow: var(--raised);
+  font: calc(var(--u) * 8)/1 var(--font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.key:active, .key.is-down {
+  padding: calc(var(--u) * 2) 0 0 calc(var(--u) * 2);
+  box-shadow: var(--pressed);
+}
+.key.inv { color: #fff; background: #000; }
+
+.soft-key { margin-top: calc(var(--u) * 2); }
+.soft-key::after {                    /* 软键上的一小条 */
+  content: "";
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 2);
+  background: #000;
+}
+.key.ok { width: calc(var(--u) * 16); height: calc(var(--u) * 16); }
+.key.ok::after {                      /* 中间的"圆点" */
+  content: "";
+  width: calc(var(--u) * 6);
+  height: calc(var(--u) * 6);
+  background: #000;
+  clip-path: polygon(
+    calc(var(--u) * 1) 0, calc(var(--u) * 5) 0, calc(var(--u) * 5) calc(var(--u) * 1),
+    calc(var(--u) * 6) calc(var(--u) * 1), calc(var(--u) * 6) calc(var(--u) * 5),
+    calc(var(--u) * 5) calc(var(--u) * 5), calc(var(--u) * 5) calc(var(--u) * 6),
+    calc(var(--u) * 1) calc(var(--u) * 6), calc(var(--u) * 1) calc(var(--u) * 5),
+    0 calc(var(--u) * 5), 0 calc(var(--u) * 1), calc(var(--u) * 1) calc(var(--u) * 1));
+}
+.key.ok:active::after, .key.ok.is-down::after { transform: translate(var(--u), var(--u)); }
+
+/* 键盘按下时（键盘操作）方向键的按下效果，和鼠标按下一样 */
+.dpad .win-btn.is-down { box-shadow: var(--pressed); }
+.dpad .win-btn.is-down::after { transform: translate(var(--u), var(--u)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .view.s-home, .dial .num::after, .dots i { animation: none; }
+  .dots i { opacity: 1; }
+}

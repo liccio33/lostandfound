@@ -70,4 +70,3 @@ button:hover { background: #303330; }
 @media (max-width: 600px) {
   .view { width: min(92vmin, 94vw, 94vh); }
 }
-

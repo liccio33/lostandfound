@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phone</title>
+<link rel="stylesheet" href="window.css" />
+<link rel="stylesheet" href="phone.css" />
+</head>
+<body>
+
+<main class="stage">
+
+  <!-- 左：手机屏幕 -->
+  <section class="phone" aria-label="Phone">
+    <div class="phone-shell"></div>
+    <div class="phone-body">
+      <span class="earpiece" aria-hidden="true"></span>
+
+      <div class="lcd-frame">
+        <div class="lcd" aria-live="polite">
+          <div class="status" aria-hidden="true">
+            <span class="sig"><i></i><i></i><i></i><i></i></span>
+            <span class="bat"><i></i><i></i><i></i></span>
+          </div>
+          <div class="view" id="view"></div>
+          <div class="soft"><span id="soft-l"></span><span id="soft-r"></span></div>
+        </div>
+      </div>
+
+      <span class="hinge" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <p class="hint">0-9 ARROWS ENTER<br>BKSP=C  ESC=END</p>
+
+  <!-- 右：键盘小窗口 -->
+  <div class="win keypad-win" aria-label="Keypad">
+
+    <div class="win-title">
+      <span class="win-icon"></span>
+      <span class="win-btns">
+        <button class="win-btn min" aria-label="Minimize" tabindex="-1"></button>
+        <button class="win-btn max" aria-label="Maximize" tabindex="-1"></button>
+        <button class="win-btn close" aria-label="Close" tabindex="-1"></button>
+      </span>
+    </div>
+
+    <div class="win-body">
+      <div class="win-content keypad" id="keypad">
+
+        <div class="pad-top">
+          <button class="key soft-key" data-key="soft-l" aria-label="Left soft key" tabindex="-1"></button>
+          <div class="dpad">
+            <button class="win-btn win-arrow up"    data-key="up"    aria-label="Up"    tabindex="-1"></button>
+            <button class="win-btn win-arrow left"  data-key="left"  aria-label="Left"  tabindex="-1"></button>
+            <button class="key ok"                  data-key="ok"    aria-label="OK"    tabindex="-1"></button>
+            <button class="win-btn win-arrow right" data-key="right" aria-label="Right" tabindex="-1"></button>
+            <button class="win-btn win-arrow down"  data-key="down"  aria-label="Down"  tabindex="-1"></button>
+          </div>
+          <button class="key soft-key" data-key="soft-r" aria-label="Right soft key" tabindex="-1"></button>
+        </div>
+
+        <div class="pad-row">
+          <button class="key" data-key="call" tabindex="-1">CALL</button>
+          <button class="key" data-key="c" aria-label="Clear" tabindex="-1">C</button>
+          <button class="key inv" data-key="end" tabindex="-1">END</button>
+        </div>
+
+        <div class="pad-nums">
+          <button class="key" data-key="1" tabindex="-1">1</button>
+          <button class="key" data-key="2" tabindex="-1">2</button>
+          <button class="key" data-key="3" tabindex="-1">3</button>
+          <button class="key" data-key="4" tabindex="-1">4</button>
+          <button class="key" data-key="5" tabindex="-1">5</button>
+          <button class="key" data-key="6" tabindex="-1">6</button>
+          <button class="key" data-key="7" tabindex="-1">7</button>
+          <button class="key" data-key="8" tabindex="-1">8</button>
+          <button class="key" data-key="9" tabindex="-1">9</button>
+          <button class="key" data-key="*" tabindex="-1">*</button>
+          <button class="key" data-key="0" tabindex="-1">0</button>
+          <button class="key" data-key="#" tabindex="-1">#</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script src="phone.js"></script>
+</body>
+</html>
