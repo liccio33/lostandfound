@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 /* ===== 手机页面（黑白像素风格）=====
-   需要和 window.css 放在同一个文件夹里：键盘小窗口直接用它的窗口样式和按钮图标。
    整个页面按一个 360×200 的"像素格子"来排版，phone.js 会算出一个整数倍的 --px，
    所以不管屏幕多大，像素点都是一样大，也不会出现滚动条。
 */
 :root {
+  --px: 1px;
+  --font: "Press Start 2P", "Courier New", monospace;
+
   /* 图标、壁纸、手机外壳的像素圆角（脚本生成，不用手改） */
   --ico-msg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 1h10v1h-10zM1 2h2v1h-2zM9 2h2v1h-2zM1 3h1v1h-1zM3 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM1 4h1v1h-1zM4 4h1v1h-1zM7 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM5 5h2v1h-2zM10 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM1 9h10v1h-10z'/%3E%3C/svg%3E");
   --ico-name: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M4 1h4v1h-4zM3 2h6v1h-6zM3 3h6v1h-6zM3 4h6v1h-6zM4 5h4v1h-4zM2 7h8v1h-8zM1 8h10v1h-10zM1 9h10v1h-10zM1 10h10v1h-10z'/%3E%3C/svg%3E");
@@ -307,97 +311,49 @@ body {
 .dots i:nth-child(3) { animation-delay: .8s; }
 @keyframes dot { 0% { opacity: 0; } 33% { opacity: 1; } 100% { opacity: 1; } }
 
-/* ================= 键盘小窗口（右）：用 window.css 的窗口 ================= */
-.keypad-win {
-  left: calc(var(--u) * 200);
-  top: calc(var(--u) * 26);
-  --w: calc(var(--u) * 134);
-  --h: calc(var(--u) * 170);
-}
-.keypad-win .win-title { cursor: default; }
-
-.win-content.keypad {
-  display: grid;
-  align-content: center;
-  justify-content: center;
-  gap: calc(var(--u) * 4);
-  padding: calc(var(--u) * 6) 0;
-  background: #000;
-}
-.pad-top {
-  display: grid;
-  grid-template-columns: calc(var(--u) * 28) calc(var(--u) * 48) calc(var(--u) * 28);
-  column-gap: calc(var(--u) * 4);
-  justify-content: center;
-  align-items: start;
-}
-.pad-row, .pad-nums {
-  display: grid;
-  grid-template-columns: repeat(3, calc(var(--u) * 36));
-  gap: calc(var(--u) * 4);
-  justify-content: center;
-}
-.pad-nums { row-gap: calc(var(--u) * 4); }
-
-/* 方向键：十字形，复用窗口滚动条的箭头按钮 */
-.dpad {
-  display: grid;
-  grid-template: repeat(3, calc(var(--u) * 16)) / repeat(3, calc(var(--u) * 16));
-}
-.dpad .up    { grid-area: 1 / 2; }
-.dpad .left  { grid-area: 2 / 1; }
-.dpad .ok    { grid-area: 2 / 2; }
-.dpad .right { grid-area: 2 / 3; }
-.dpad .down  { grid-area: 3 / 2; }
-
-/* 普通按键 */
-.key {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: calc(var(--u) * 13);
-  padding: 0;
-  border: 0;
-  color: #000;
-  background: var(--face);
-  box-shadow: var(--raised);
-  font: calc(var(--u) * 8)/1 var(--font);
-  cursor: pointer;
+/* ================= 键盘特写（右）：斜着看的像素画面 ================= */
+.keypad-scene {
+  position: absolute;
+  left: calc(var(--u) * 196);
+  top: calc(var(--u) * 24);
+  width: calc(var(--u) * 150);       /* 画布是 150 × 172 个像素格子，整数倍放大 */
+  height: calc(var(--u) * 172);
+  display: block;
+  image-rendering: pixelated;
   touch-action: manipulation;
 }
-.key:active, .key.is-down {
-  padding: calc(var(--u) * 2) 0 0 calc(var(--u) * 2);
-  box-shadow: var(--pressed);
-}
-.key.inv { color: #fff; background: #000; }
-
-.soft-key { margin-top: calc(var(--u) * 2); }
-.soft-key::after {                    /* 软键上的一小条 */
-  content: "";
-  width: calc(var(--u) * 12);
-  height: calc(var(--u) * 2);
-  background: #000;
-}
-.key.ok { width: calc(var(--u) * 16); height: calc(var(--u) * 16); }
-.key.ok::after {                      /* 中间的"圆点" */
-  content: "";
-  width: calc(var(--u) * 6);
-  height: calc(var(--u) * 6);
-  background: #000;
-  clip-path: polygon(
-    calc(var(--u) * 1) 0, calc(var(--u) * 5) 0, calc(var(--u) * 5) calc(var(--u) * 1),
-    calc(var(--u) * 6) calc(var(--u) * 1), calc(var(--u) * 6) calc(var(--u) * 5),
-    calc(var(--u) * 5) calc(var(--u) * 5), calc(var(--u) * 5) calc(var(--u) * 6),
-    calc(var(--u) * 1) calc(var(--u) * 6), calc(var(--u) * 1) calc(var(--u) * 5),
-    0 calc(var(--u) * 5), 0 calc(var(--u) * 1), calc(var(--u) * 1) calc(var(--u) * 1));
-}
-.key.ok:active::after, .key.ok.is-down::after { transform: translate(var(--u), var(--u)); }
-
-/* 键盘按下时（键盘操作）方向键的按下效果，和鼠标按下一样 */
-.dpad .win-btn.is-down { box-shadow: var(--pressed); }
-.dpad .win-btn.is-down::after { transform: translate(var(--u), var(--u)); }
 
 @media (prefers-reduced-motion: reduce) {
   .view.s-home, .dial .num::after, .dots i { animation: none; }
   .dots i { opacity: 1; }
+}
+
+.keyboard-window .win-content {
+  display: grid;
+  place-items: center;
+}
+
+
+
+/* 键盘画布放进窗口，并缩小一点来给标题栏留空间 */
+.keyboard-window .keypad-scene {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: calc(var(--px) * 128);
+  height: calc(var(--px) * 147);
+}
+
+#sky {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.stage {
+  z-index: 1;
 }

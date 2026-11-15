@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Music Box</title>
+<link rel="stylesheet" href="window.css" />
+<link rel="stylesheet" href="musicbox.css" />
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<main class="stage">
+
+  <!-- 左上：八音盒的右侧方视图，转动把手上发条 -->
+  <div class="win side active" aria-label="Music box, right side view with crank">
+    <div class="win-title">
+      <span class="win-icon"></span>
+      <span class="win-btns">
+        <button class="win-btn min" aria-label="Minimize" tabindex="-1"></button>
+        <button class="win-btn max" aria-label="Maximize" tabindex="-1"></button>
+        <button class="win-btn close" aria-label="Close" tabindex="-1"></button>
+      </span>
+    </div>
+    <div class="win-body">
+      <div class="win-content mb">
+        <canvas id="side" width="124" height="92" aria-label="Winding crank"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右：八音盒内部。左边是金属条，右边是带凸起的滚筒（摊平了看） -->
+  <div class="win mech" aria-label="Music box mechanism">
+    <div class="win-title">
+      <span class="win-icon"></span>
+      <span class="win-btns">
+        <button class="win-btn min" aria-label="Minimize" tabindex="-1"></button>
+        <button class="win-btn max" aria-label="Maximize" tabindex="-1"></button>
+        <button class="win-btn close" aria-label="Close" tabindex="-1"></button>
+      </span>
+    </div>
+    <div class="win-body">
+      <div class="win-content mb">
+        <canvas id="mech" width="272" height="124" aria-label="Cylinder with pins"></canvas>
+        <div class="mb-bar">
+          <button class="mb-btn" id="btn-clear" type="button" tabindex="-1">CLEAR</button>
+          <button class="mb-btn" id="btn-demo" type="button" tabindex="-1">DEMO</button>
+          <button class="mb-btn" id="btn-stop" type="button" tabindex="-1">STOP</button>
+          <span class="mb-status"><span id="st-note">NOTE --</span><span id="st-pins">PINS 0</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 左下：怎么玩 -->
+  <p class="howto">
+    1 DRAG THE<br>CRANK ROUND<br>TO WIND IT.<br>
+    2 LET GO TO<br>PLAY.<br>
+    3 CLICK THE<br>DRUM: ADD OR<br>REMOVE PINS.<br>
+    CLICK THE LID<br>TO CLOSE IT.
+  </p>
+
+</main>
+
+<script src="musicbox.js"></script>
+<script src="starfield.js"></script>
+</body>
+</html>

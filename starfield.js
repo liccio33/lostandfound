@@ -60,7 +60,7 @@ window.addEventListener("pointerleave", clearPointer);
 
 // 鼠标在全屏 window iframe 上移动时
 window.addEventListener("message", (event) => {
-  if (event.source !== windowFrame.contentWindow) return;
+  if (!windowFrame || event.source !== windowFrame.contentWindow) return;
 
   if (event.data?.type === "starfield-pointer") {
     updatePointer(event.data.x, event.data.y);

@@ -81,7 +81,6 @@
   const viewEl = document.getElementById("view");
   const softL = document.getElementById("soft-l");
   const softR = document.getElementById("soft-r");
-  const keypad = document.getElementById("keypad");
 
   let stack = [{ name: "home" }];
   let callTimer = 0;
@@ -312,13 +311,8 @@
     SCREENS[s.name].key(s, k);
   }
 
-  // ---------- 鼠标 / 触摸点键盘 ----------
-  keypad.addEventListener("pointerdown", (e) => {
-    const b = e.target.closest("[data-key]");
-    if (!b) return;
-    e.preventDefault();
-    press(b.dataset.key);
-  });
+  // ---------- 鼠标 / 触摸点键盘（右边那张斜着看的键盘特写）----------
+  const pad = Keypad.init({ canvas: document.getElementById("keypad"), onPress: (k) => press(k) });
 
   // ---------- 电脑键盘也能按 ----------
   const KEYMAP = {
@@ -328,12 +322,7 @@
   };
   const REPEATABLE = ["up", "down", "left", "right", "c"];
 
-  function flash(k) {
-    const b = keypad.querySelector(`[data-key="${k}"]`);
-    if (!b) return;
-    b.classList.add("is-down");
-    setTimeout(() => b.classList.remove("is-down"), 110);
-  }
+  const flash = (k) => pad.flash(k);
 
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -353,6 +342,52 @@
 
   draw();
 
-  // 方便在控制台里试：phone.press("1")
-  window.phone = { press, home };
+
+
+let topZIndex = 10;
+
+document.querySelectorAll(".win").forEach((win) => {
+  const titleBar = win.querySelector(".win-title");
+  if (!titleBar) return;
+
+  let drag = null;
+
+  titleBar.addEventListener("pointerdown", (event) => {
+    // 点击标题栏按钮时不拖动窗口
+    if (event.target.closest("button")) return;
+
+    drag = {
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      left: win.offsetLeft,
+      top: win.offsetTop
+    };
+
+    win.style.zIndex = ++topZIndex;
+    titleBar.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  titleBar.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+
+    const unit =
+      parseFloat(getComputedStyle(win).getPropertyValue("--u")) || 1;
+
+    const x = drag.left + event.clientX - drag.pointerX;
+    const y = drag.top + event.clientY - drag.pointerY;
+
+    win.style.left = `${Math.round(x / unit) * unit}px`;
+    win.style.top = `${Math.round(y / unit) * unit}px`;
+  });
+
+  const stopDragging = () => {
+    drag = null;
+  };
+
+  titleBar.addEventListener("pointerup", stopDragging);
+  titleBar.addEventListener("pointercancel", stopDragging);
+});
+
+window.phone = { press, home, pad };
 })();

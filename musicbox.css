@@ -1,0 +1,196 @@
+/* ===== 八音盒页面（黑白像素风格）=====
+   需要和 window.css 放在同一个文件夹里：两个窗口都用它的窗口样式。
+   整个页面按一个 400×225 的"像素格子"来排版，musicbox.js 会算出一个整数倍的 --px，
+   所以不管屏幕多大，像素点都是一样大，也不会出现滚动条。
+*/
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;               /* 不让页面滚动 */
+  background: #000;
+}
+body {
+  display: grid;
+  place-items: center;
+  font-family: var(--font);
+}
+
+.stage {
+  --u: var(--px);
+  position: relative;
+  width: calc(var(--u) * 400);
+  height: calc(var(--u) * 225);
+  color: #fff;
+  font: calc(var(--u) * 8)/1.25 var(--font);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.stage *, .stage *::before, .stage *::after { box-sizing: border-box; }
+
+/* 两个窗口的位置和大小（单位：像素格子） */
+.win.side {
+  left: calc(var(--u) * 6);
+  top: calc(var(--u) * 6);
+  --w: calc(var(--u) * 130);
+  --h: calc(var(--u) * 116);
+  z-index: 2;                      /* 小窗口盖在大窗口上面 */
+}
+.win.mech {
+  left: calc(var(--u) * 114);
+  top: calc(var(--u) * 43);
+  --w: calc(var(--u) * 280);
+  --h: calc(var(--u) * 176);
+  z-index: 1;
+}
+.win .win-title { cursor: default; }
+
+/* 窗口里：黑色底，里面放画布 */
+.win-content.mb {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+.mb canvas {
+  display: block;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+#side {
+  width: calc(var(--u) * 124);
+  height: calc(var(--u) * 92);
+  cursor: grab;
+}
+#side.winding { cursor: grabbing; }
+#mech {
+  width: calc(var(--u) * 272);
+  height: calc(var(--u) * 124);
+  cursor: crosshair;
+}
+
+/* 大窗口底下的按钮条 */
+.mb-bar {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  height: calc(var(--u) * 28);
+  padding: 0 calc(var(--u) * 2);
+}
+.mb-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: calc(var(--u) * 16);
+  padding: 0 calc(var(--u) * 5);
+  border: 0;
+  color: #000;
+  background: var(--face);
+  box-shadow: var(--raised);
+  font: calc(var(--u) * 8)/1 var(--font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mb-btn:active {
+  padding: calc(var(--u) * 2) calc(var(--u) * 5) 0 calc(var(--u) * 7);
+  box-shadow: var(--pressed);
+}
+.mb-status {
+  display: flex;
+  gap: calc(var(--u) * 6);
+  margin-left: auto;
+  color: #c0c0c0;
+  white-space: nowrap;
+}
+
+/* 左下角的玩法说明 */
+.howto {
+  position: absolute;
+  left: calc(var(--u) * 8);
+  top: calc(var(--u) * 127);
+  width: calc(var(--u) * 104);
+  margin: 0;
+  color: #909090;
+  font: calc(var(--u) * 8)/calc(var(--u) * 10) var(--font);
+}
+
+/* 窗口装饰固定用 1px，匹配 Starfield；
+   窗口位置和内容仍按舞台的 --px 缩放。 */
+.win.side,
+.win.mech {
+  --u: 1px;
+}
+
+.win.side {
+  left: calc(var(--px) * 6);
+  top: calc(var(--px) * 6);
+  --w: calc(var(--px) * 124 + 6px);
+  --h: calc(var(--px) * 92 + 24px);
+  z-index: 2;
+}
+
+.win.mech {
+  left: calc(var(--px) * 114);
+  top: calc(var(--px) * 43);
+  --w: calc(var(--px) * 272 + 6px);
+  --h: calc(var(--px) * 152 + 24px);
+  z-index: 1;
+}
+
+/* 标题栏用于拖动 */
+.win .win-title {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.win .win-title:active {
+  cursor: grabbing;
+}
+
+/* 画布和控制条继续按舞台比例显示 */
+#side {
+  width: calc(var(--px) * 124);
+  height: calc(var(--px) * 92);
+}
+
+#mech {
+  width: calc(var(--px) * 272);
+  height: calc(var(--px) * 124);
+}
+
+.mb-bar {
+  gap: calc(var(--px) * 4);
+  height: calc(var(--px) * 28);
+  padding: 0 calc(var(--px) * 2);
+}
+
+.mb-btn {
+  height: calc(var(--px) * 16);
+  padding: 0 calc(var(--px) * 5);
+  font: calc(var(--px) * 8)/1 var(--font);
+}
+
+.mb-btn:active {
+  padding: calc(var(--px) * 2) calc(var(--px) * 5) 0 calc(var(--px) * 7);
+}
+
+.mb-status {
+  gap: calc(var(--px) * 6);
+  font: calc(var(--px) * 4)/1 var(--font);
+}
+
+#sky {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.stage {
+  z-index: 1;
+}
